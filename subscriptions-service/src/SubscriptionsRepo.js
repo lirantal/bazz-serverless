@@ -2,12 +2,16 @@
 
 const uuid = require('uuid')
 const AWS = require('aws-sdk')
-// @TODO
-// use specific configuration to test locally:
-// AWS.config.update({
-//   region: 'us-east-1',
-//   endpoint: 'http://localhost:4569'
-// })
+
+// SLS explicitly sets this on local invocation
+// so we can use it as a flag for working with
+// a local dynamodb instance
+if (process.env.IS_LOCAL) {
+  AWS.config.update({
+    region: 'us-east-1',
+    endpoint: 'http://localhost:4569'
+  })
+}
 
 const db = new AWS.DynamoDB.DocumentClient()
 const tableName = process.env['DYNAMODB_TABLE'] || 'subscriptions'
@@ -42,6 +46,7 @@ class SubscriptionsRepo {
       KeyConditionExpression: '#token = :token',
       TableName: tableName,
       IndexName: 'token',
+      ScanIndexForward: false,
       Limit: 1
     }
     return db.query(params).promise()
