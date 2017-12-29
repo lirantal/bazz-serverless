@@ -1,0 +1,6 @@
+{
+  "resource": "/",
+  "path": "/",
+  "httpMethod": "PUT",
+  "body": "{\"token\":\"abc-def\"}"
+}

@@ -1,0 +1,6 @@
+{
+  "resource": "/",
+  "path": "/",
+  "httpMethod": "POST",
+  "body": "{\"subscription\":{\"endpoint\":\"http://www.example.com\",\"auth_keys\":\"123\"},\"token\":\"abc-def\"}"
+}
