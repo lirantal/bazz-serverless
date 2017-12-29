@@ -30,6 +30,8 @@ class Subscriptions {
     if (
       !subscriptionObject ||
       !subscriptionObject.endpoint ||
+      !subscriptionObject.endpoint.length ||
+      !subscriptionObject.keys ||
       typeof subscriptionObject.endpoint !== 'string'
     ) {
       throw new Error('Invalid subscription object')
