@@ -77,6 +77,15 @@ package:
     - package-lock.json
 
 functions:
+  getSubscriptions:
+    handler: subscriptions.getSubscriptions
+    memorySize: 128
+    description: Get subscriptions list (by token)
+    events:
+      - http:
+          path: subscriptions
+          method: get
+          cors: true
   saveSubscription:
     handler: subscriptions.saveSubscription
     memorySize: 128

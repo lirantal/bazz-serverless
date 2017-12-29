@@ -68,6 +68,41 @@ module.exports.saveSubscription = (event, context, callback) => {
     })
 }
 
+module.exports.getSubscriptions = (event, context, callback) => {
+  const logger = new Logger('getSubscriptions')
+  const subscription = new Subscriptions()
+
+  const token = event.queryStringParameters.token
+  return Promise.resolve()
+    .then(function () {
+      return subscription.getByToken(token)
+    })
+    .then(function (result) {
+      const bodyRespone = {
+        data: {
+          success: true
+        }
+      }
+
+      return responseSuccess({ statusCode: 200, body: result }, callback)
+    })
+    .catch(function (error) {
+      const errorResponse = {}
+      if (error && error.statusCode) {
+        errorResponse.statusCode = error.statusCode
+      } else {
+        errorResponse.statusCode = 404
+      }
+
+      if (error && error.message) {
+        errorResponse.message = error.message
+        errorResponse.stack = error.stack
+      }
+
+      return responseError(errorResponse, callback)
+    })
+}
+
 module.exports.triggerSubscriptionByToken = (event, context, callback) => {
   const logger = new Logger('triggerSubscriptionByToken')
   const subscription = new Subscriptions()

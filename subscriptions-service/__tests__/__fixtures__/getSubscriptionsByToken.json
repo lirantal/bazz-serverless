@@ -1,0 +1,9 @@
+{
+  "resource": "/",
+  "path": "/",
+  "httpMethod": "GET",
+  "body": "",
+  "queryStringParameters": {
+    "token": "abc-def"
+  }
+}

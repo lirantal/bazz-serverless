@@ -159,6 +159,10 @@ $ cd subscriptions-service
 $ SLS_DEBUG=* sls invoke local --function triggerSubscriptionByToken --path __tests__/__fixtures__/triggerNotificationData.json
 ```
 
+```bash
+$ cd subscriptions-service
+$ SLS_DEBUG=* sls invoke local --function getSubscriptions --path __tests__/__fixtures__/getSubscriptionsByToken.json
+```
 
 
 

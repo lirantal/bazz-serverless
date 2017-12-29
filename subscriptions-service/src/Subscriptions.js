@@ -52,6 +52,34 @@ class Subscriptions {
     return subscriptionsRepository.create(sub)
   }
 
+  getByToken (token) {
+    if (!token) {
+      throw new Error('no token found in request')
+    }
+
+    return subscriptionsRepository.getByToken(token).then(subscription => {
+      if (subscription && subscription.Count === 0) {
+        throw new Error('No subscription found for token')
+      }
+
+      const sub = subscription.Items[0]
+      logger.info(sub)
+
+      return this.isValid(sub)
+        .catch(err => {
+          throw new Error('No subscription found for token')
+        })
+        .then(() => {
+          return {
+            id: sub.id,
+            active: true,
+            notified: sub.notified,
+            token: sub.token
+          }
+        })
+    })
+  }
+
   updateSubscriptionNotified (sub) {
     return subscriptionsRepository.update(sub, { notified: true })
   }
@@ -76,6 +104,10 @@ class Subscriptions {
           throw new Error('No subscription found for token')
         }
 
+        // @FIXME this checks the subscription object wrapper from dynamodb
+        // and not the actual object from the db
+        // @FIXME also consider if we actually want to limit it? or just
+        // to have a flag whether it was ever notified or not
         if (
           subscription &&
           subscription.notified &&
