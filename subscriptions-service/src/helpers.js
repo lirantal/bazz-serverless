@@ -28,18 +28,20 @@ module.exports.responseError = function responseError (error, callback) {
   return callback(null, res)
 }
 
-module.exports.responseSuccess = function responseSuccess (success, callback) {
+module.exports.responseSuccess = function responseSuccess (response, callback) {
   logger.info('request ended with success response')
   const res = {
-    statusCode: success.statusCode,
+    statusCode: response.statusCode || 200,
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*' // Required for CORS support to work
     },
     body: JSON.stringify({
-      data: {
-        success: true
-      }
+      data: response && response.body && response.body.data
+        ? response.body.data
+        : {
+          success: true
+        }
     })
   }
 

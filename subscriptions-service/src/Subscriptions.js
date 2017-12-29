@@ -88,8 +88,7 @@ class Subscriptions {
     return webpush.sendNotification(subscription)
   }
 
-  triggerSubscriptionNotification (data) {
-    const token = data.token
+  triggerSubscriptionNotification (token) {
     if (!token) {
       throw new Error('no token found in request')
     }
@@ -97,8 +96,8 @@ class Subscriptions {
     return subscriptionsRepository
       .getByToken(token)
       .then(subscription => {
-        logger.log('retrieved subscription by token')
-        logger.log(subscription)
+        logger.info('retrieved subscription by token')
+        logger.info(subscription)
 
         if (subscription && subscription.Count === 0) {
           throw new Error('No subscription found for token')
@@ -131,8 +130,8 @@ class Subscriptions {
         }
       })
       .then(sub => {
-        logger.log('triggering push notification for subscription:')
-        logger.log(sub)
+        logger.info('triggering push notification for subscription:')
+        logger.info(sub)
         return this.triggerPushMsg(sub.subscription).then(function () {
           return sub
         })
@@ -147,7 +146,7 @@ class Subscriptions {
         // })
       })
       .then(sub => {
-        logger.log('update subscription notification as notified')
+        logger.info('update subscription notification as notified')
         return this.updateSubscriptionNotified(sub)
       })
   }

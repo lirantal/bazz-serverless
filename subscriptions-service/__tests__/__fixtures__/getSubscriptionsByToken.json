@@ -2,8 +2,11 @@
   "resource": "/",
   "path": "/",
   "httpMethod": "GET",
+  "headers": {
+    "Authorization": "abc-def"
+  },
   "body": "",
   "queryStringParameters": {
-    "token": "abc-def"
+    "qsName": "qsValue"
   }
 }

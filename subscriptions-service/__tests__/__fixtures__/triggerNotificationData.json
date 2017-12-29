@@ -2,5 +2,8 @@
   "resource": "/",
   "path": "/",
   "httpMethod": "PUT",
-  "body": "{\"token\":\"abc-def\"}"
+  "//body": "{\"token\":\"abc-def\"}",
+  "headers": {
+    "Authorization": "abc-def"
+  }
 }

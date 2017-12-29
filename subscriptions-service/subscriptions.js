@@ -72,7 +72,7 @@ module.exports.getSubscriptions = (event, context, callback) => {
   const logger = new Logger('getSubscriptions')
   const subscription = new Subscriptions()
 
-  const token = event.queryStringParameters.token
+  const token = event.headers['Authorization'] || event.headers['authorization']
   return Promise.resolve()
     .then(function () {
       return subscription.getByToken(token)
@@ -107,18 +107,13 @@ module.exports.triggerSubscriptionByToken = (event, context, callback) => {
   const logger = new Logger('triggerSubscriptionByToken')
   const subscription = new Subscriptions()
 
-  let requestBody
-  try {
-    requestBody = JSON.parse(event.body)
-  } catch (error) {
-    return responseError({ statusCode: 400, message: error.message }, callback)
-  }
+  const token = event.headers['Authorization'] || event.headers['authorization']
 
   return Promise.resolve()
     .then(function () {
       logger.info('triggering subscription notification for request')
-      logger.info(requestBody)
-      return subscription.triggerSubscriptionNotification(requestBody)
+      logger.info(token)
+      return subscription.triggerSubscriptionNotification(token)
     })
     .then(function (result) {
       logger.info('notification service result')

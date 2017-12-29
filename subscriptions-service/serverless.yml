@@ -77,6 +77,15 @@ package:
     - package-lock.json
 
 functions:
+  createToken:
+    handler: tokens.createToken
+    memorySize: 128
+    description: Semi-Signup - Creates a token for the user
+    events:
+      - http:
+          path: tokens
+          method: post
+          cors: true
   getSubscriptions:
     handler: subscriptions.getSubscriptions
     memorySize: 128
