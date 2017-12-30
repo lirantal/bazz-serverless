@@ -26,8 +26,12 @@ class Token {
         })
       })
       .then(data => {
+        if (!data || !data.subscription || !data.token) {
+          return new Error('Unable to create token')
+        }
+
         if (data.subscription && data.subscription.Count === 0) {
-          return data.token
+          return subscriptionsRepository.reserveSubscription(data.token)
         } else {
           throw new Error('Token already exists')
         }

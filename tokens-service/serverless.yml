@@ -23,8 +23,19 @@ provider:
   stage: dev
   region: us-east-1
   environment:
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+#    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    SUBSCRIPTIONS_TABLE: "subscriptions-service-${opt:stage, self:provider.stage}"
   profile: serverless-cli
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SUBSCRIPTIONS_TABLE}*"
 
 # you can overwrite defaults here
 #  stage: dev

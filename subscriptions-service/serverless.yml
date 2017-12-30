@@ -86,15 +86,37 @@ functions:
           path: tokens
           method: post
           cors: true
+  getSubscriptionsPending:
+    handler: subscriptions.getSubscriptionsPending
+    memorySize: 128
+    description: Get new subscriptions pending approval
+    events:
+      - http:
+          path: subscriptions/pending
+          method: get
+          cors: true
   getSubscriptions:
     handler: subscriptions.getSubscriptions
     memorySize: 128
-    description: Get subscriptions list (by token)
+    description: Get subscriptions list
     events:
       - http:
           path: subscriptions
           method: get
           cors: true
+  confirmSubscription:
+    handler: subscriptions.confirmSubscription
+    memorySize: 128
+    description: Let a token confirm a subscription
+    events:
+      - http:
+          path: subscriptions/{id}/confirmations
+          method: post
+          cors: true
+          request: 
+            parameters: 
+              paths: 
+                id: true
   saveSubscription:
     handler: subscriptions.saveSubscription
     memorySize: 128
@@ -110,8 +132,8 @@ functions:
     description: Saves a browser's push notification subscription
     events:
       - http:
-          path: subscriptions
-          method: put
+          path: tokens/notifications
+          method: post
           cors: true
 
 #    The following are a few example events you can configure
@@ -174,6 +196,12 @@ resources:
             AttributeName: token
             AttributeType: S
           -
+            AttributeName: status
+            AttributeType: S
+          -
+            AttributeName: id_nonce_status
+            AttributeType: S
+          -
             AttributeName: createdAt
             AttributeType: S
         KeySchema:
@@ -185,6 +213,19 @@ resources:
             KeySchema:
               -
                 AttributeName: token
+                KeyType: HASH
+              -
+                AttributeName: status
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: id_nonce_status
+            KeySchema:
+              -
+                AttributeName: id_nonce_status
                 KeyType: HASH
               -
                 AttributeName: createdAt

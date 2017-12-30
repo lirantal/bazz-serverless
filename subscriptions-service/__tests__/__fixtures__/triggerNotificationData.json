@@ -2,8 +2,7 @@
   "resource": "/",
   "path": "/",
   "httpMethod": "PUT",
-  "//body": "{\"token\":\"abc-def\"}",
   "headers": {
-    "Authorization": "abc-def"
+    "Authorization": "175f0b8c604def05fd41c1cf7eac291144e4c63935747b4300babed87dd6c40a8edd41fdcee02da867a2eba8695fbd64"
   }
 }

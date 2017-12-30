@@ -68,6 +68,86 @@ module.exports.saveSubscription = (event, context, callback) => {
     })
 }
 
+module.exports.getSubscriptionsPending = (event, context, callback) => {
+  const logger = new Logger('getSubscriptionsPending')
+  const subscription = new Subscriptions()
+
+  const data = {
+    token: event.headers['Authorization'] || event.headers['authorization'],
+    sub_id: event.queryStringParameters['sub_id'],
+    nonce: event.queryStringParameters['nonce'],
+    status: event.queryStringParameters['status']
+  }
+
+  return Promise.resolve()
+    .then(function () {
+      return subscription.getPendingApproval(data)
+    })
+    .then(function (subscriptionItem) {
+      const bodyRespone = {
+        data: subscriptionItem
+      }
+
+      return responseSuccess({ statusCode: 200, body: bodyRespone }, callback)
+    })
+    .catch(function (error) {
+      const errorResponse = {}
+      if (error && error.statusCode) {
+        errorResponse.statusCode = error.statusCode
+      } else {
+        errorResponse.statusCode = 404
+      }
+
+      if (error && error.message) {
+        errorResponse.message = error.message
+        errorResponse.stack = error.stack
+      }
+
+      return responseError(errorResponse, callback)
+    })
+}
+
+module.exports.confirmSubscription = (event, context, callback) => {
+  const logger = new Logger('confirmSubscription')
+  const subscription = new Subscriptions()
+
+  const requestBody = JSON.parse(event.body)
+  const data = {
+    token: event.headers['Authorization'] || event.headers['authorization'],
+    sub_id: event.pathParameters['id'],
+    nonce: requestBody && requestBody.nonce ? requestBody.nonce : null
+  }
+
+  return Promise.resolve()
+    .then(function () {
+      return subscription.confirmSubscription(data)
+    })
+    .then(function (subscriptionItem) {
+      const bodyRespone = {
+        data: {
+          success: true
+        }
+      }
+
+      return responseSuccess({ statusCode: 200, body: bodyRespone }, callback)
+    })
+    .catch(function (error) {
+      const errorResponse = {}
+      if (error && error.statusCode) {
+        errorResponse.statusCode = error.statusCode
+      } else {
+        errorResponse.statusCode = 404
+      }
+
+      if (error && error.message) {
+        errorResponse.message = error.message
+        errorResponse.stack = error.stack
+      }
+
+      return responseError(errorResponse, callback)
+    })
+}
+
 module.exports.getSubscriptions = (event, context, callback) => {
   const logger = new Logger('getSubscriptions')
   const subscription = new Subscriptions()
@@ -79,12 +159,10 @@ module.exports.getSubscriptions = (event, context, callback) => {
     })
     .then(function (result) {
       const bodyRespone = {
-        data: {
-          success: true
-        }
+        data: result
       }
 
-      return responseSuccess({ statusCode: 200, body: result }, callback)
+      return responseSuccess({ statusCode: 200, body: bodyRespone }, callback)
     })
     .catch(function (error) {
       const errorResponse = {}

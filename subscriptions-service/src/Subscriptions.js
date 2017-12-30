@@ -32,9 +32,11 @@ class Subscriptions {
       !subscriptionObject.endpoint ||
       !subscriptionObject.endpoint.length ||
       !subscriptionObject.keys ||
+      !data.sub_id ||
+      !data.nonce ||
       typeof subscriptionObject.endpoint !== 'string'
     ) {
-      throw new Error('Invalid subscription object')
+      return Promise.reject(new Error('Invalid subscription object'))
     }
 
     return Promise.resolve(true)
@@ -46,10 +48,70 @@ class Subscriptions {
         endpoint: String(data.subscription.endpoint),
         keys: data.subscription.keys
       },
-      token: String(data.token)
+      sub_id: String(data.sub_id),
+      nonce: String(data.nonce)
     }
 
-    return subscriptionsRepository.create(sub)
+    return subscriptionsRepository.updateSubscription(sub)
+  }
+
+  confirmSubscription (data) {
+    const sub = {
+      token: String(data.token),
+      sub_id: String(data.sub_id),
+      nonce: String(data.nonce),
+      status: 'new'
+    }
+
+    return this.getPendingApproval(sub)
+      .then(subscriptionItem => {
+        if (subscriptionItem.id && subscriptionItem.valid === true) {
+          return subscriptionsRepository.confirmSubscription(subscriptionItem)
+        } else {
+          throw new Error('Invalid confirmation request')
+        }
+      })
+      .then(resultSet => {
+        // don't return the subcription object
+        return true
+      })
+  }
+
+  getPendingApproval (data) {
+    if (!data || !data.token || !data.sub_id || !data.nonce || !data.status) {
+      throw new Error('bad request')
+    }
+
+    logger.info(data)
+    return subscriptionsRepository.getPendingApproval(data).then(resultSet => {
+      logger.info(resultSet)
+
+      if (!resultSet) {
+        throw new Error('Malformed query response')
+      }
+
+      if (resultSet && resultSet.Count === 0) {
+        throw new Error('Subscription not found')
+      }
+
+      if (resultSet.Items[0].token !== data.token) {
+        throw new Error('Subscription not found')
+      }
+
+      const subscriptionItem = resultSet.Items[0]
+      subscriptionItem.sub_id = subscriptionItem.id
+
+      return this.isValid(subscriptionItem)
+        .catch(err => {
+          throw new Error('Subscription not found')
+        })
+        .then(() => {
+          return {
+            id: subscriptionItem.id,
+            valid: true
+          }
+        })
+    })
   }
 
   getByToken (token) {
@@ -57,31 +119,27 @@ class Subscriptions {
       throw new Error('no token found in request')
     }
 
-    return subscriptionsRepository.getByToken(token).then(subscription => {
-      if (subscription && subscription.Count === 0) {
-        throw new Error('No subscription found for token')
-      }
-
-      const sub = subscription.Items[0]
-      logger.info(sub)
-
-      return this.isValid(sub)
-        .catch(err => {
+    return subscriptionsRepository
+      .getByToken(token, { approved: true })
+      .then(subscription => {
+        if (subscription && subscription.Count === 0) {
           throw new Error('No subscription found for token')
-        })
-        .then(() => {
-          return {
-            id: sub.id,
-            active: true,
-            notified: sub.notified,
-            token: sub.token
-          }
-        })
-    })
+        }
+
+        const sub = subscription.Items[0]
+        logger.info(sub)
+
+        return {
+          id: sub.id,
+          status: sub.status,
+          createdAt: sub.createdAt,
+          updatedAt: sub.updatedAt
+        }
+      })
   }
 
   updateSubscriptionNotified (sub) {
-    return subscriptionsRepository.update(sub, { notified: true })
+    return subscriptionsRepository.setSubscriptionNotified(sub)
   }
 
   triggerPushMsg (subscription) {
@@ -94,7 +152,7 @@ class Subscriptions {
     }
 
     return subscriptionsRepository
-      .getByToken(token)
+      .getByToken(token, { approved: true })
       .then(subscription => {
         logger.info('retrieved subscription by token')
         logger.info(subscription)

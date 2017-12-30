@@ -2,5 +2,5 @@
   "resource": "/",
   "path": "/",
   "httpMethod": "POST",
-  "body": "{\"subscription\":{\"endpoint\":\"http://www.example.com\",\"keys\":\"123\"},\"token\":\"abc-def\"}"
+  "body": "{\"subscription\":{\"endpoint\":\"http://www.example.com\",\"keys\":\"123\"},\"sub_id\":\"bd6dc420-ed55-11e7-840b-c7626d30a014\",\"nonce\":\"d4bda0fa-f6f1-42b9-8aa8-7c4141d8b5a3\"}"
 }

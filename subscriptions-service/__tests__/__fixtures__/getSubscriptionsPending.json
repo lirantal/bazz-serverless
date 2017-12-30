@@ -1,0 +1,14 @@
+{
+  "resource": "/",
+  "path": "/",
+  "httpMethod": "GET",
+  "headers": {
+    "Authorization": "508ae3ebacb99624723a2f2c3dd001d50786067be370223f1cb447d6b979decdf3689a2891aebd2e7672e85a5238602c"
+  },
+  "body": "",
+  "queryStringParameters": {
+    "sub_id": "bd6dc420-ed55-11e7-840b-c7626d30a014",
+    "nonce": "d4bda0fa-f6f1-42b9-8aa8-7c4141d8b5a3",
+    "status": "new"
+  }
+}
