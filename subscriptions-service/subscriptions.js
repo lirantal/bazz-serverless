@@ -75,8 +75,7 @@ module.exports.getSubscriptionsPending = (event, context, callback) => {
   const data = {
     token: event.headers['Authorization'] || event.headers['authorization'],
     sub_id: event.queryStringParameters['sub_id'],
-    nonce: event.queryStringParameters['nonce'],
-    status: event.queryStringParameters['status']
+    nonce: event.queryStringParameters['nonce']
   }
 
   return Promise.resolve()

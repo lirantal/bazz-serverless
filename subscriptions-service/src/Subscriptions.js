@@ -59,8 +59,7 @@ class Subscriptions {
     const sub = {
       token: String(data.token),
       sub_id: String(data.sub_id),
-      nonce: String(data.nonce),
-      status: 'new'
+      nonce: String(data.nonce)
     }
 
     return this.getPendingApproval(sub)
@@ -78,7 +77,7 @@ class Subscriptions {
   }
 
   getPendingApproval (data) {
-    if (!data || !data.token || !data.sub_id || !data.nonce || !data.status) {
+    if (!data || !data.token || !data.sub_id || !data.nonce) {
       throw new Error('bad request')
     }
 
