@@ -164,7 +164,7 @@ class SubscriptionsRepo {
   /**
    * let a token confirm its subscription is ready to be used
    *
-   * @param {*} subscriptionRequest
+   * @param {*} subscription
    */
   static confirmSubscription (subscription) {
     const params = {
@@ -177,7 +177,7 @@ class SubscriptionsRepo {
         '#id_nonce_status': 'id_nonce_status'
       },
       ExpressionAttributeValues: {
-        ':id_nonce_status': `${subscriptionRequest.sub_id}#${subscriptionRequest.nonce}#${STATUS.APPROVED}`,
+        ':id_nonce_status': `${subscription.sub_id}#${subscription.nonce}#${STATUS.APPROVED}`,
         ':status': STATUS.APPROVED,
         ':updatedAt': new Date().toISOString()
       },
