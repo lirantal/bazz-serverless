@@ -89,7 +89,48 @@ $ sls deploy function --function saveSubscription
 $ sls deploy function --function triggerSubscriptionByToken
 ```
 
-# Local Development & Test
+# Local Development
+
+Bazz uses a DynamoDB for persistency, so for any of the functions to work, it needs a database. This is accommodated using the localstack project.
+
+Manual tests are run by invoking individual functions using the serverless framework.
+
+## localstack setup for DynamoDB
+
+[localstack](https://github.com/localstack/localstack) is used as an all-in-one project to simulate and mock many of AWS services in a local docker-based environment.
+
+### Install
+
+Python is required:
+
+```bash
+$ pip install localstack
+```
+
+### Run localstack
+
+We'll run the docker-based localstack version:
+
+```bash
+$ localstack start --docker
+```
+
+This will download an image with all the required software running inside it. We can test running it with some aws commands that point to the local aws infra:
+
+```bash
+$ aws --endpoint-url=http://localhost:4572 s3 ls
+```
+
+## Migrate DynamoDB schema
+
+Once localstack is up and able to serve DynamoDB requests, its required to migrate the bazz schema to create tables and indexes:
+
+```bash
+$ cd subscriptions-service
+$ sls dynamodb migrate
+```
+
+# Testing
 
 ## invoking a function
 
@@ -141,7 +182,7 @@ To print out all debug information when `sls` is invokved prefix every command e
 Invoke the `createToken` function, without needing to pass any data or context:
 
 ```bash
-$ cd tokens-service
+$ cd subscriptions-service
 $ sls invoke local --function createToken
 ```
 
