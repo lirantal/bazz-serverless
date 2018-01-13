@@ -241,7 +241,7 @@ resources:
         
 plugins:
   - serverless-dynamodb-local
-
+  
 custom:
   dynamodb:
     start:

@@ -2,13 +2,14 @@
 
 const crypto = require('crypto')
 const Logger = require('./Logger')
+const ApiError = require('boom')
 const subscriptionsRepository = require('./SubscriptionsRepo')
 
 const logger = new Logger({ name: 'Token' })
 
 class Token {
   constructor () {
-    // this.token = uuid()
+    this.tokenBytes = 48
   }
 
   create () {
@@ -27,20 +28,20 @@ class Token {
       })
       .then(data => {
         if (!data || !data.subscription || !data.token) {
-          return new Error('Unable to create token')
+          throw new ApiError.notImplemented('Unable to create token')
         }
 
         if (data.subscription && data.subscription.Count === 0) {
           return subscriptionsRepository.reserveSubscription(data.token)
         } else {
-          throw new Error('Token already exists')
+          throw new ApiError.conflict('Token already exists')
         }
       })
   }
 
   generateApiToken () {
     return new Promise((resolve, reject) => {
-      crypto.randomBytes(48, (err, buffer) => {
+      crypto.randomBytes(this.tokenBytes, (err, buffer) => {
         if (err) {
           return reject(err)
         }

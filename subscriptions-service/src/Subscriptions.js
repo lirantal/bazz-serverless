@@ -1,5 +1,7 @@
 'use strict'
 
+const ApiError = require('boom')
+
 const subscriptionsRepository = require('./SubscriptionsRepo')
 const webpush = require('web-push')
 const Logger = require('./Logger')
@@ -25,6 +27,8 @@ class Subscriptions {
    * @param {*} data
    */
   isValid (data) {
+    logger.info('checking subscription object validity')
+
     // A valid subscription object should at least has a URL endpoint defined
     const subscriptionObject = data && data.subscription
     if (
@@ -36,23 +40,27 @@ class Subscriptions {
       !data.nonce ||
       typeof subscriptionObject.endpoint !== 'string'
     ) {
-      return Promise.reject(new Error('Invalid subscription object'))
+      return Promise.reject(new ApiError.badData('Invalid subscription object'))
     }
 
     return Promise.resolve(true)
   }
 
   create (data) {
-    const sub = {
-      subscription: {
-        endpoint: String(data.subscription.endpoint),
-        keys: data.subscription.keys
-      },
-      sub_id: String(data.sub_id),
-      nonce: String(data.nonce)
-    }
+    logger.info('creating a subscription from this request payload')
 
-    return subscriptionsRepository.updateSubscription(sub)
+    return this.isValid(data).then(() => {
+      const sub = {
+        subscription: {
+          endpoint: String(data.subscription.endpoint),
+          keys: data.subscription.keys
+        },
+        sub_id: String(data.sub_id),
+        nonce: String(data.nonce)
+      }
+
+      return subscriptionsRepository.updateSubscription(sub)
+    })
   }
 
   confirmSubscription (data) {
@@ -67,7 +75,7 @@ class Subscriptions {
         if (subscriptionItem.id && subscriptionItem.valid === true) {
           return subscriptionsRepository.confirmSubscription(subscriptionItem)
         } else {
-          throw new Error('Invalid confirmation request')
+          throw new ApiError.badRequest('Invalid confirmation request')
         }
       })
       .then(resultSet => {
@@ -78,7 +86,7 @@ class Subscriptions {
 
   getPendingApproval (data) {
     if (!data || !data.token || !data.sub_id || !data.nonce) {
-      throw new Error('bad request')
+      throw new ApiError.badRequest('Missing token, subscription id and nonce')
     }
 
     logger.info(data)
@@ -86,15 +94,15 @@ class Subscriptions {
       logger.info(resultSet)
 
       if (!resultSet) {
-        throw new Error('Malformed query response')
+        throw new ApiError.badImplementation('Malformed query response')
       }
 
       if (resultSet && resultSet.Count === 0) {
-        throw new Error('Subscription not found')
+        throw new ApiError.notFound('Subscription not found')
       }
 
       if (resultSet.Items[0].token !== data.token) {
-        throw new Error('Subscription not found')
+        throw new ApiError.notFound('Subscription not found')
       }
 
       const subscriptionItem = resultSet.Items[0]
@@ -102,7 +110,7 @@ class Subscriptions {
 
       return this.isValid(subscriptionItem)
         .catch(err => {
-          throw new Error('Subscription not found')
+          throw new ApiError.notFound('Subscription not found')
         })
         .then(() => {
           return {
@@ -115,14 +123,14 @@ class Subscriptions {
 
   getByToken (token) {
     if (!token) {
-      throw new Error('no token found in request')
+      throw new ApiError.unauthorized('No token found')
     }
 
     return subscriptionsRepository
       .getByToken(token, { approved: true })
       .then(subscription => {
         if (subscription && subscription.Count === 0) {
-          throw new Error('No subscription found for token')
+          throw new ApiError.notFound('No subscription found for token')
         }
 
         const sub = subscription.Items[0]
@@ -147,7 +155,7 @@ class Subscriptions {
 
   triggerSubscriptionNotification (token) {
     if (!token) {
-      throw new Error('no token found in request')
+      throw new ApiError.unauthorized('No token found')
     }
 
     return subscriptionsRepository
@@ -157,7 +165,7 @@ class Subscriptions {
         logger.info(subscription)
 
         if (subscription && subscription.Count === 0) {
-          throw new Error('No subscription found for token')
+          throw new ApiError.notFound('No subscription found for token')
         }
 
         // @FIXME this checks the subscription object wrapper from dynamodb
@@ -169,21 +177,19 @@ class Subscriptions {
           subscription.notified &&
           subscription.notified === true
         ) {
-          throw new Error('Subscription token already notified')
+          throw new ApiError.conflict('Subscription token already notified')
         }
 
         try {
           const sub = subscription.Items[0]
 
           if (!sub.subscription.endpoint) {
-            throw new Error('Malformed subscription object')
+            throw new ApiError.notImplemented('Malformed subscription object')
           }
 
           return sub
         } catch (error) {
-          const err = new Error('Malformed subscription object')
-          err.statusCode = 500
-          throw err
+          throw new ApiError.notImplemented('Malformed subscription object')
         }
       })
       .then(sub => {
