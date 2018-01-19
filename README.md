@@ -206,6 +206,10 @@ $ SLS_DEBUG=* sls invoke local --function getSubscriptions --path __tests__/__fi
 ```
 
 
+# Related
+
+[bazz-frontend](https://github.com/lirantal/bazz-frontend) - the frontend project
+[bazz](https://github.com/lirantal/bazz) - the Node.js CLI app
 
 # Author
 Liran Tal <liran.tal@gmail.com>
