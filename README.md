@@ -2,6 +2,10 @@
 
 Node.js, yarn, and the serverless framework.
 
+[![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
+![AWS](https://img.shields.io/badge/AWS--blue.svg)
+![DynamoDB](https://img.shields.io/badge/DynamoDB--red.svg)
+
 ```bash
 yarn global add serverless
 ```
