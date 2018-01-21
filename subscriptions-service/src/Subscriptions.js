@@ -4,9 +4,7 @@ const ApiError = require('boom')
 
 const subscriptionsRepository = require('./SubscriptionsRepo')
 const webpush = require('web-push')
-const Logger = require('./Logger')
-
-const logger = new Logger('Subscriptions')
+const Logger = require('./Logger')()
 
 class Subscriptions {
   constructor () {
@@ -27,7 +25,7 @@ class Subscriptions {
    * @param {*} data
    */
   isValid (data) {
-    logger.info('checking subscription object validity')
+    Logger.log.info('checking subscription object validity')
 
     // A valid subscription object should at least has a URL endpoint defined
     const subscriptionObject = data && data.subscription
@@ -47,7 +45,7 @@ class Subscriptions {
   }
 
   create (data) {
-    logger.info('creating a subscription from this request payload')
+    Logger.log.info('creating a subscription from this request payload')
 
     return this.isValid(data).then(() => {
       const sub = {
@@ -89,9 +87,9 @@ class Subscriptions {
       throw new ApiError.badRequest('Missing token, subscription id and nonce')
     }
 
-    logger.info(data)
+    Logger.log.debug(data)
     return subscriptionsRepository.getPendingApproval(data).then(resultSet => {
-      logger.info(resultSet)
+      Logger.log.debug(resultSet)
 
       if (!resultSet) {
         throw new ApiError.badImplementation('Malformed query response')
@@ -134,7 +132,7 @@ class Subscriptions {
         }
 
         const sub = subscription.Items[0]
-        logger.info(sub)
+        Logger.log.debug(sub)
 
         return {
           id: sub.id,
@@ -161,8 +159,8 @@ class Subscriptions {
     return subscriptionsRepository
       .getByToken(token, { approved: true })
       .then(subscription => {
-        logger.info('retrieved subscription by token')
-        logger.info(subscription)
+        Logger.log.info('retrieved subscription by token')
+        Logger.log.info(subscription)
 
         if (subscription && subscription.Count === 0) {
           throw new ApiError.notFound('No subscription found for token')
@@ -193,8 +191,8 @@ class Subscriptions {
         }
       })
       .then(sub => {
-        logger.info('triggering push notification for subscription:')
-        logger.info(sub)
+        Logger.log.info('triggering push notification for subscription:')
+        Logger.log.info(sub)
         return this.triggerPushMsg(sub.subscription).then(function () {
           return sub
         })
@@ -209,7 +207,7 @@ class Subscriptions {
         // })
       })
       .then(sub => {
-        logger.info('update subscription notification as notified')
+        Logger.log.info('update subscription notification as notified')
         return this.updateSubscriptionNotified(sub)
       })
   }

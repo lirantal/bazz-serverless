@@ -3,12 +3,23 @@
 const httpStatus = require('statuses')
 const ApiError = require('boom')
 
+const Logger = require('./src/Logger')({
+  token: process.env.LOG_TOKEN,
+  subdomain: process.env.LOG_SUBDOMAIN,
+  tags: ['bazz']
+})
+
 const Subscriptions = require('./src/Subscriptions')
 const { responseError, responseSuccess } = require('./src/helpers')
-const Logger = require('./src/Logger')
 
 module.exports.saveSubscription = (event, context, callback) => {
-  const logger = new Logger('saveSubscription')
+  Logger.extendWithMeta({
+    meta: {
+      event,
+      context
+    }
+  })
+
   const subscription = new Subscriptions()
 
   let requestBody
@@ -18,11 +29,11 @@ module.exports.saveSubscription = (event, context, callback) => {
     throw new ApiError.badRequest('Missing or incorrect data')
   }
 
-  logger.info(requestBody)
+  Logger.log.debug(requestBody)
 
   return Promise.resolve()
     .then(function () {
-      logger.info('creating a subscription from this request payload')
+      Logger.log.info('creating a subscription from this request payload')
       return subscription.create(requestBody)
     })
     .then(function (result) {
@@ -34,7 +45,13 @@ module.exports.saveSubscription = (event, context, callback) => {
 }
 
 module.exports.getSubscriptionsPending = (event, context, callback) => {
-  const logger = new Logger('getSubscriptionsPending')
+  Logger.extendWithMeta({
+    meta: {
+      event,
+      context
+    }
+  })
+
   const subscription = new Subscriptions()
 
   let data = {}
@@ -65,7 +82,13 @@ module.exports.getSubscriptionsPending = (event, context, callback) => {
 }
 
 module.exports.confirmSubscription = (event, context, callback) => {
-  const logger = new Logger('confirmSubscription')
+  Logger.extendWithMeta({
+    meta: {
+      event,
+      context
+    }
+  })
+
   const subscription = new Subscriptions()
 
   let data = {}
@@ -93,7 +116,13 @@ module.exports.confirmSubscription = (event, context, callback) => {
 }
 
 module.exports.getSubscriptions = (event, context, callback) => {
-  const logger = new Logger('getSubscriptions')
+  Logger.extendWithMeta({
+    meta: {
+      event,
+      context
+    }
+  })
+
   const subscription = new Subscriptions()
 
   let token = ''
@@ -120,7 +149,13 @@ module.exports.getSubscriptions = (event, context, callback) => {
 }
 
 module.exports.triggerSubscriptionByToken = (event, context, callback) => {
-  const logger = new Logger('triggerSubscriptionByToken')
+  Logger.extendWithMeta({
+    meta: {
+      event,
+      context
+    }
+  })
+
   const subscription = new Subscriptions()
 
   let token = ''
@@ -132,13 +167,13 @@ module.exports.triggerSubscriptionByToken = (event, context, callback) => {
 
   return Promise.resolve()
     .then(function () {
-      logger.info('triggering subscription notification for request')
-      logger.info(token)
+      Logger.log.info('triggering subscription notification for request')
+      Logger.log.debug(token)
       return subscription.triggerSubscriptionNotification(token)
     })
     .then(function (result) {
-      logger.info('notification service result')
-      logger.info(result)
+      Logger.log.info('notification service result')
+      Logger.log.debug(result)
 
       return responseSuccess({ statusCode: httpStatus['Created'] }, callback)
     })

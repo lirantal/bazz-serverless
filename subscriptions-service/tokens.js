@@ -2,18 +2,28 @@
 
 const httpStatus = require('statuses')
 
+const Logger = require('./src/Logger')({
+  token: process.env.LOG_TOKEN,
+  subdomain: process.env.LOG_SUBDOMAIN,
+  tags: ['bazz']
+})
 const Token = require('./src/Tokens')
 const { responseError, responseSuccess } = require('./src/helpers')
-const Logger = require('./src/Logger')
 
 module.exports.createToken = (event, context, callback) => {
+  Logger.extendWithMeta({
+    meta: {
+      event,
+      context
+    }
+  })
+
   const token = new Token()
-  const logger = new Logger({ name: 'Tokens' })
 
   return token
     .create()
     .then(function (result) {
-      logger.info(result)
+      Logger.log.debug(result)
 
       const bodyRespone = {
         data: {

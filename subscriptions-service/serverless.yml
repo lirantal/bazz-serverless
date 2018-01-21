@@ -23,6 +23,8 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: us-east-1
   environment:
+    LOG_TOKEN: ${file(./config.${self:provider.stage}.json):log.token}
+    LOG_SUBDOMAIN: ${file(./config.${self:provider.stage}.json):log.subdomain} 
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
     WEB_PUSH_PUBKEY: ${file(./config.${self:provider.stage}.json):vapidKeys.publicKey}
     WEB_PUSH_PRVKEY: ${file(./config.${self:provider.stage}.json):vapidKeys.privateKey}

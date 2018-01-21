@@ -2,8 +2,7 @@
 
 const Boom = require('boom')
 const httpStatus = require('statuses')
-const Logger = require('./Logger')
-const logger = new Logger()
+const Logger = require('./Logger')()
 
 /**
  * lambda api gateway error handle
@@ -12,7 +11,7 @@ const logger = new Logger()
  * @param {function} lambda function callback
  */
 module.exports.responseError = function responseError (error, callback) {
-  logger.info('request ended with error response')
+  Logger.log.error('request ended with error response')
 
   const internalError = !error.hasOwnProperty('isBoom')
 
@@ -40,8 +39,9 @@ module.exports.responseError = function responseError (error, callback) {
     })
   }
 
-  logger.info(error.stack)
-  logger.info(res)
+  Logger.log.debug(error.stack)
+  Logger.log.debug(Object.assign({}, res))
+
   return callback(null, res)
 }
 
@@ -52,7 +52,7 @@ module.exports.responseError = function responseError (error, callback) {
  * @param {function} lambda function callback
  */
 module.exports.responseSuccess = function responseSuccess (response, callback) {
-  logger.info('request ended with success response')
+  Logger.log.info('request ended with success response')
 
   const statusCode = response && response.statusCode
     ? response.statusCode
@@ -74,6 +74,6 @@ module.exports.responseSuccess = function responseSuccess (response, callback) {
     })
   }
 
-  logger.info(res)
+  Logger.log.debug(Object.assign({}, res))
   return callback(null, res)
 }

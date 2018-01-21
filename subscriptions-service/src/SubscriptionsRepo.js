@@ -2,7 +2,7 @@
 
 const uuid = require('uuid')
 const AWS = require('aws-sdk')
-const Logger = require('./Logger')
+const Logger = require('./Logger')()
 
 // SLS explicitly sets this on local invocation
 // so we can use it as a flag for working with
@@ -16,7 +16,6 @@ if (process.env.IS_LOCAL) {
 
 const db = new AWS.DynamoDB.DocumentClient()
 const tableName = process.env['DYNAMODB_TABLE'] || 'subscriptions'
-const logger = new Logger('SubscriptionsRepository')
 
 const STATUS = {
   NEW: 'new',

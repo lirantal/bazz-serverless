@@ -1,11 +1,10 @@
 'use strict'
 
 const crypto = require('crypto')
-const Logger = require('./Logger')
 const ApiError = require('boom')
-const subscriptionsRepository = require('./SubscriptionsRepo')
 
-const logger = new Logger({ name: 'Token' })
+const Logger = require('./Logger')()
+const subscriptionsRepository = require('./SubscriptionsRepo')
 
 class Token {
   constructor () {
@@ -13,7 +12,7 @@ class Token {
   }
 
   create () {
-    logger.info('generating api token:')
+    Logger.log.info('generating api token:')
 
     return this.generateApiToken()
       .then(token => {

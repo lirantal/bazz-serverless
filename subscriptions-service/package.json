@@ -9,7 +9,9 @@
     "boom": "5.2.0",
     "pino": "^4.10.2",
     "statuses": "^1.4.0",
-    "web-push": "^3.2.5"
+    "web-push": "^3.2.5",
+    "winston": "2.4.0",
+    "winston-loggly-bulk": "^2.0.2"
   },
   "devDependencies": {
     "serverless-dynamodb-local": "^0.2.26"
