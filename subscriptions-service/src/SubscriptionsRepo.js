@@ -2,7 +2,6 @@
 
 const uuid = require('uuid')
 const AWS = require('aws-sdk')
-const Logger = require('./Logger')()
 
 // SLS explicitly sets this on local invocation
 // so we can use it as a flag for working with
@@ -26,7 +25,7 @@ class SubscriptionsRepo {
   /**
    * user's token sign-up to reserve a subscription object
    */
-  static reserveSubscription (token) {
+  static reserveSubscription(token) {
     const id = uuid.v1()
     const nonce = uuid.v4()
 
@@ -44,7 +43,7 @@ class SubscriptionsRepo {
     return db.put(params).promise().then(() => params.Item)
   }
 
-  static getByToken (token, options) {
+  static getByToken(token, options) {
     const params = {
       TableName: tableName,
       IndexName: 'token',
@@ -68,7 +67,7 @@ class SubscriptionsRepo {
     return db.query(params).promise()
   }
 
-  static getPendingApproval (data) {
+  static getPendingApproval(data) {
     const params = {
       TableName: tableName,
       IndexName: 'id_nonce_status',
@@ -84,7 +83,7 @@ class SubscriptionsRepo {
     return db.query(params).promise()
   }
 
-  static getNew (id) {
+  static getNew(id) {
     const params = {
       Key: {
         id: id
@@ -112,7 +111,7 @@ class SubscriptionsRepo {
    *
    * @param {*} subscriptionRequest
    */
-  static updateSubscription (subscriptionRequest) {
+  static updateSubscription(subscriptionRequest) {
     const params = {
       TableName: tableName,
       IndexName: 'id_nonce_status',
@@ -165,7 +164,7 @@ class SubscriptionsRepo {
    *
    * @param {*} subscription
    */
-  static confirmSubscription (subscription) {
+  static confirmSubscription(subscription) {
     const params = {
       TableName: tableName,
       Key: {
@@ -187,7 +186,7 @@ class SubscriptionsRepo {
     return db.update(params).promise()
   }
 
-  static setSubscriptionNotified (subscription) {
+  static setSubscriptionNotified(subscription) {
     const params = {
       TableName: tableName,
       Key: {

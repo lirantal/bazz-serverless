@@ -3,7 +3,8 @@
 const httpStatus = require('statuses')
 const ApiError = require('boom')
 
-const Logger = require('./src/Logger')({
+const LoggerService = require('./src/Logger')
+const Logger = new LoggerService({
   token: process.env.LOG_TOKEN,
   subdomain: process.env.LOG_SUBDOMAIN,
   tags: ['bazz']
