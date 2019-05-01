@@ -19,7 +19,7 @@ service: subscriptions-service
 
 provider:
   name: aws
-  runtime: nodejs6.10
+  runtime: nodejs8.10
   stage: ${opt:stage, 'dev'}
   region: us-east-1
   environment:
@@ -28,7 +28,7 @@ provider:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
     WEB_PUSH_PUBKEY: ${file(./config.${self:provider.stage}.json):vapidKeys.publicKey}
     WEB_PUSH_PRVKEY: ${file(./config.${self:provider.stage}.json):vapidKeys.privateKey}
-  profile: serverless-cli
+  profile: serverless-deploy-tool
   iamRoleStatements:
     - Effect: Allow
       Action:
