@@ -4,10 +4,11 @@ const ApiError = require('boom')
 
 const subscriptionsRepository = require('./SubscriptionsRepo')
 const webpush = require('web-push')
-const Logger = require('./Logger')()
+const LoggerService = require('./Logger')
+const Logger = new LoggerService()
 
 class Subscriptions {
-  constructor () {
+  constructor() {
     const vapidKeys = {
       publicKey: process.env.WEB_PUSH_PUBKEY,
       privateKey: process.env.WEB_PUSH_PRVKEY
@@ -24,7 +25,7 @@ class Subscriptions {
    *
    * @param {*} data
    */
-  isValid (data) {
+  isValid(data) {
     Logger.log.info('checking subscription object validity')
 
     // A valid subscription object should at least has a URL endpoint defined
@@ -44,7 +45,7 @@ class Subscriptions {
     return Promise.resolve(true)
   }
 
-  create (data) {
+  create(data) {
     Logger.log.info('creating a subscription from this request payload')
 
     return this.isValid(data).then(() => {
@@ -61,7 +62,7 @@ class Subscriptions {
     })
   }
 
-  confirmSubscription (data) {
+  confirmSubscription(data) {
     const sub = {
       token: String(data.token),
       sub_id: String(data.sub_id),
@@ -82,7 +83,7 @@ class Subscriptions {
       })
   }
 
-  getPendingApproval (data) {
+  getPendingApproval(data) {
     if (!data || !data.token || !data.sub_id || !data.nonce) {
       throw new ApiError.badRequest('Missing token, subscription id and nonce')
     }
@@ -119,7 +120,7 @@ class Subscriptions {
     })
   }
 
-  getByToken (token) {
+  getByToken(token) {
     if (!token) {
       throw new ApiError.unauthorized('No token found')
     }
@@ -143,15 +144,15 @@ class Subscriptions {
       })
   }
 
-  updateSubscriptionNotified (sub) {
+  updateSubscriptionNotified(sub) {
     return subscriptionsRepository.setSubscriptionNotified(sub)
   }
 
-  triggerPushMsg (subscription) {
+  triggerPushMsg(subscription) {
     return webpush.sendNotification(subscription)
   }
 
-  triggerSubscriptionNotification (token) {
+  triggerSubscriptionNotification(token) {
     if (!token) {
       throw new ApiError.unauthorized('No token found')
     }

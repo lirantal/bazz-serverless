@@ -3,15 +3,16 @@
 const crypto = require('crypto')
 const ApiError = require('boom')
 
-const Logger = require('./Logger')()
 const subscriptionsRepository = require('./SubscriptionsRepo')
+const LoggerService = require('./Logger')
+const Logger = new LoggerService()
 
 class Token {
-  constructor () {
+  constructor() {
     this.tokenBytes = 48
   }
 
-  create () {
+  create() {
     Logger.log.info('generating api token:')
 
     return this.generateApiToken()
@@ -38,7 +39,7 @@ class Token {
       })
   }
 
-  generateApiToken () {
+  generateApiToken() {
     return new Promise((resolve, reject) => {
       crypto.randomBytes(this.tokenBytes, (err, buffer) => {
         if (err) {

@@ -2,7 +2,8 @@
 
 const Boom = require('boom')
 const httpStatus = require('statuses')
-const Logger = require('./Logger')()
+const LoggerService = require('./Logger')
+const Logger = new LoggerService()
 
 /**
  * lambda api gateway error handle
@@ -10,7 +11,7 @@ const Logger = require('./Logger')()
  * @param {object.message} An error message that will be returned in the payload
  * @param {function} lambda function callback
  */
-module.exports.responseError = function responseError (error, callback) {
+module.exports.responseError = function responseError(error, callback) {
   Logger.log.error('request ended with error response')
 
   const internalError = !error.hasOwnProperty('isBoom')
@@ -51,7 +52,7 @@ module.exports.responseError = function responseError (error, callback) {
  * @param {object.body.data} A response payload
  * @param {function} lambda function callback
  */
-module.exports.responseSuccess = function responseSuccess (response, callback) {
+module.exports.responseSuccess = function responseSuccess(response, callback) {
   Logger.log.info('request ended with success response')
 
   const statusCode = response && response.statusCode
