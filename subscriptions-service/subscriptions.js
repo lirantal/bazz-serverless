@@ -11,7 +11,7 @@ const Logger = new LoggerService({
 })
 
 const Subscriptions = require('./src/Subscriptions')
-const { responseError, responseSuccess } = require('./src/helpers')
+const {responseError, responseSuccess} = require('./src/helpers')
 
 module.exports.saveSubscription = (event, context, callback) => {
   Logger.extendWithMeta({
@@ -33,14 +33,14 @@ module.exports.saveSubscription = (event, context, callback) => {
   Logger.log.debug(requestBody)
 
   return Promise.resolve()
-    .then(function () {
+    .then(function() {
       Logger.log.info('creating a subscription from this request payload')
       return subscription.create(requestBody)
     })
-    .then(function (result) {
-      return responseSuccess({ statusCode: httpStatus['Created'] }, callback)
+    .then(function(result) {
+      return responseSuccess({statusCode: httpStatus['Created']}, callback)
     })
-    .catch(function (error) {
+    .catch(function(error) {
       return responseError(error, callback)
     })
 }
@@ -67,17 +67,17 @@ module.exports.getSubscriptionsPending = (event, context, callback) => {
   }
 
   return Promise.resolve()
-    .then(function () {
+    .then(function() {
       return subscription.getPendingApproval(data)
     })
-    .then(function (subscriptionItem) {
+    .then(function(subscriptionItem) {
       const bodyRespone = {
         data: subscriptionItem
       }
 
-      return responseSuccess({ body: bodyRespone }, callback)
+      return responseSuccess({body: bodyRespone}, callback)
     })
-    .catch(function (error) {
+    .catch(function(error) {
       return responseError(error, callback)
     })
 }
@@ -105,13 +105,13 @@ module.exports.confirmSubscription = (event, context, callback) => {
   }
 
   return Promise.resolve()
-    .then(function () {
+    .then(function() {
       return subscription.confirmSubscription(data)
     })
-    .then(function (subscriptionItem) {
+    .then(function(subscriptionItem) {
       return responseSuccess(null, callback)
     })
-    .catch(function (error) {
+    .catch(function(error) {
       return responseError(error, callback)
     })
 }
@@ -134,17 +134,17 @@ module.exports.getSubscriptions = (event, context, callback) => {
   }
 
   return Promise.resolve()
-    .then(function () {
+    .then(function() {
       return subscription.getByToken(token)
     })
-    .then(function (result) {
+    .then(function(result) {
       const bodyRespone = {
         data: result
       }
 
-      return responseSuccess({ body: bodyRespone }, callback)
+      return responseSuccess({body: bodyRespone}, callback)
     })
-    .catch(function (error) {
+    .catch(function(error) {
       return responseError(error, callback)
     })
 }
@@ -167,18 +167,18 @@ module.exports.triggerSubscriptionByToken = (event, context, callback) => {
   }
 
   return Promise.resolve()
-    .then(function () {
+    .then(function() {
       Logger.log.info('triggering subscription notification for request')
       Logger.log.debug(token)
       return subscription.triggerSubscriptionNotification(token)
     })
-    .then(function (result) {
+    .then(function(result) {
       Logger.log.info('notification service result')
       Logger.log.debug(result)
 
-      return responseSuccess({ statusCode: httpStatus['Created'] }, callback)
+      return responseSuccess({statusCode: httpStatus['Created']}, callback)
     })
-    .catch(function (error) {
+    .catch(function(error) {
       return responseError(error, callback)
     })
 }

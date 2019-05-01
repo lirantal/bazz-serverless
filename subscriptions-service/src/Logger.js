@@ -12,14 +12,14 @@ class Logger {
       name: appName,
       level: level
     })
-    this.log = this.logger.child({ tags })
+    this.log = this.logger.child({tags})
   }
 
   extendWithMeta(options = {}) {
     const event = options && options.meta && options.meta.event
     const context = options && options.meta && options.meta.context
 
-    this.log = this.log.child({ event, context })
+    this.log = this.log.child({event, context})
   }
 }
 

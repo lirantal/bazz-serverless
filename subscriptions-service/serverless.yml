@@ -24,7 +24,7 @@ provider:
   region: us-east-1
   environment:
     LOG_TOKEN: ${file(./config.${self:provider.stage}.json):log.token}
-    LOG_SUBDOMAIN: ${file(./config.${self:provider.stage}.json):log.subdomain} 
+    LOG_SUBDOMAIN: ${file(./config.${self:provider.stage}.json):log.subdomain}
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
     WEB_PUSH_PUBKEY: ${file(./config.${self:provider.stage}.json):vapidKeys.publicKey}
     WEB_PUSH_PRVKEY: ${file(./config.${self:provider.stage}.json):vapidKeys.privateKey}
@@ -38,7 +38,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*"
+      Resource: 'arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*'
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -115,9 +115,9 @@ functions:
           path: subscriptions/{id}/confirmations
           method: post
           cors: true
-          request: 
-            parameters: 
-              paths: 
+          request:
+            parameters:
+              paths:
                 id: true
   saveSubscription:
     handler: subscriptions.saveSubscription
@@ -191,33 +191,25 @@ resources:
       Properties:
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
         AttributeDefinitions:
-          -
-            AttributeName: id
+          - AttributeName: id
             AttributeType: S
-          -
-            AttributeName: token
+          - AttributeName: token
             AttributeType: S
-          -
-            AttributeName: status
+          - AttributeName: status
             AttributeType: S
-          -
-            AttributeName: id_nonce_status
+          - AttributeName: id_nonce_status
             AttributeType: S
-          -
-            AttributeName: createdAt
+          - AttributeName: createdAt
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: id
+          - AttributeName: id
             KeyType: HASH
         GlobalSecondaryIndexes:
           - IndexName: token
             KeySchema:
-              -
-                AttributeName: token
+              - AttributeName: token
                 KeyType: HASH
-              -
-                AttributeName: status
+              - AttributeName: status
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
@@ -226,11 +218,9 @@ resources:
               WriteCapacityUnits: 5
           - IndexName: id_nonce_status
             KeySchema:
-              -
-                AttributeName: id_nonce_status
+              - AttributeName: id_nonce_status
                 KeyType: HASH
-              -
-                AttributeName: createdAt
+              - AttributeName: createdAt
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
@@ -240,10 +230,10 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
-        
+
 plugins:
   - serverless-dynamodb-local
-  
+
 custom:
   dynamodb:
     start:

@@ -14,11 +14,7 @@ class Subscriptions {
       privateKey: process.env.WEB_PUSH_PRVKEY
     }
 
-    webpush.setVapidDetails(
-      'mailto:noreply@example.com',
-      vapidKeys.publicKey,
-      vapidKeys.privateKey
-    )
+    webpush.setVapidDetails('mailto:noreply@example.com', vapidKeys.publicKey, vapidKeys.privateKey)
   }
 
   /**
@@ -125,23 +121,21 @@ class Subscriptions {
       throw new ApiError.unauthorized('No token found')
     }
 
-    return subscriptionsRepository
-      .getByToken(token, { approved: true })
-      .then(subscription => {
-        if (subscription && subscription.Count === 0) {
-          throw new ApiError.notFound('No subscription found for token')
-        }
+    return subscriptionsRepository.getByToken(token, {approved: true}).then(subscription => {
+      if (subscription && subscription.Count === 0) {
+        throw new ApiError.notFound('No subscription found for token')
+      }
 
-        const sub = subscription.Items[0]
-        Logger.log.debug(sub)
+      const sub = subscription.Items[0]
+      Logger.log.debug(sub)
 
-        return {
-          id: sub.id,
-          status: sub.status,
-          createdAt: sub.createdAt,
-          updatedAt: sub.updatedAt
-        }
-      })
+      return {
+        id: sub.id,
+        status: sub.status,
+        createdAt: sub.createdAt,
+        updatedAt: sub.updatedAt
+      }
+    })
   }
 
   updateSubscriptionNotified(sub) {
@@ -158,7 +152,7 @@ class Subscriptions {
     }
 
     return subscriptionsRepository
-      .getByToken(token, { approved: true })
+      .getByToken(token, {approved: true})
       .then(subscription => {
         Logger.log.info('retrieved subscription by token')
         Logger.log.info(subscription)
@@ -171,11 +165,7 @@ class Subscriptions {
         // and not the actual object from the db
         // @FIXME also consider if we actually want to limit it? or just
         // to have a flag whether it was ever notified or not
-        if (
-          subscription &&
-          subscription.notified &&
-          subscription.notified === true
-        ) {
+        if (subscription && subscription.notified && subscription.notified === true) {
           throw new ApiError.conflict('Subscription token already notified')
         }
 
@@ -194,7 +184,7 @@ class Subscriptions {
       .then(sub => {
         Logger.log.info('triggering push notification for subscription:')
         Logger.log.info(sub)
-        return this.triggerPushMsg(sub.subscription).then(function () {
+        return this.triggerPushMsg(sub.subscription).then(function() {
           return sub
         })
         // @TODO might want to specifically handle an error

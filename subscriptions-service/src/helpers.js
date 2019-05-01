@@ -16,13 +16,12 @@ module.exports.responseError = function responseError(error, callback) {
 
   const internalError = !error.hasOwnProperty('isBoom')
 
-  const statusCode = error && error.output && error.output.statusCode
-    ? error.output.statusCode
-    : httpStatus['Internal Server Error']
+  const statusCode =
+    error && error.output && error.output.statusCode
+      ? error.output.statusCode
+      : httpStatus['Internal Server Error']
 
-  const message = error && error.message && !internalError
-    ? error.message
-    : 'Internal server error'
+  const message = error && error.message && !internalError ? error.message : 'Internal server error'
 
   const res = {
     statusCode,
@@ -32,9 +31,10 @@ module.exports.responseError = function responseError(error, callback) {
     },
     body: JSON.stringify({
       error: {
-        statusCode: error && error.output && error.output.statusCode
-          ? error.output.statusCode
-          : httpStatus['Internal Server Error'],
+        statusCode:
+          error && error.output && error.output.statusCode
+            ? error.output.statusCode
+            : httpStatus['Internal Server Error'],
         message
       }
     })
@@ -55,9 +55,7 @@ module.exports.responseError = function responseError(error, callback) {
 module.exports.responseSuccess = function responseSuccess(response, callback) {
   Logger.log.info('request ended with success response')
 
-  const statusCode = response && response.statusCode
-    ? response.statusCode
-    : httpStatus['OK']
+  const statusCode = response && response.statusCode ? response.statusCode : httpStatus['OK']
 
   const res = {
     statusCode,
@@ -67,11 +65,12 @@ module.exports.responseSuccess = function responseSuccess(response, callback) {
     },
     body: JSON.stringify({
       statusCode,
-      data: response && response.body && response.body.data
-        ? response.body.data
-        : {
-          success: true
-        }
+      data:
+        response && response.body && response.body.data
+          ? response.body.data
+          : {
+              success: true
+            }
     })
   }
 

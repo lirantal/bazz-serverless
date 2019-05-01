@@ -8,7 +8,7 @@ const Logger = require('./src/Logger')({
   tags: ['bazz']
 })
 const Token = require('./src/Tokens')
-const { responseError, responseSuccess } = require('./src/helpers')
+const {responseError, responseSuccess} = require('./src/helpers')
 
 module.exports.createToken = (event, context, callback) => {
   Logger.extendWithMeta({
@@ -22,7 +22,7 @@ module.exports.createToken = (event, context, callback) => {
 
   return token
     .create()
-    .then(function (result) {
+    .then(function(result) {
       Logger.log.debug(result)
 
       const bodyRespone = {
@@ -33,9 +33,9 @@ module.exports.createToken = (event, context, callback) => {
         }
       }
 
-      return responseSuccess({ body: bodyRespone }, callback)
+      return responseSuccess({body: bodyRespone}, callback)
     })
-    .catch(function (error) {
+    .catch(function(error) {
       return responseError(error, callback)
     })
 }

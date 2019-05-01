@@ -40,7 +40,10 @@ class SubscriptionsRepo {
         createdAt: new Date().toISOString()
       }
     }
-    return db.put(params).promise().then(() => params.Item)
+    return db
+      .put(params)
+      .promise()
+      .then(() => params.Item)
   }
 
   static getByToken(token, options) {
@@ -119,7 +122,9 @@ class SubscriptionsRepo {
         '#id_nonce_status': 'id_nonce_status'
       },
       ExpressionAttributeValues: {
-        ':id_nonce_status': `${subscriptionRequest.sub_id}#${subscriptionRequest.nonce}#${STATUS.NEW}`
+        ':id_nonce_status': `${subscriptionRequest.sub_id}#${subscriptionRequest.nonce}#${
+          STATUS.NEW
+        }`
       },
       KeyConditionExpression: '#id_nonce_status = :id_nonce_status'
     }
@@ -179,7 +184,8 @@ class SubscriptionsRepo {
         ':status': STATUS.APPROVED,
         ':updatedAt': new Date().toISOString()
       },
-      UpdateExpression: 'SET #status = :status, #id_nonce_status = :id_nonce_status, updatedAt = :updatedAt',
+      UpdateExpression:
+        'SET #status = :status, #id_nonce_status = :id_nonce_status, updatedAt = :updatedAt',
       ReturnValues: 'ALL_NEW'
     }
 
