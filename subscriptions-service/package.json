@@ -4,6 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "author": "Liran Tal <liran.tal@gmail.com>",
+  "scripts": {
+    "deploy:dev": "sls deploy --stage=dev --verbose",
+    "deploy:prod": "sls deploy --stage=prod --verbose"
+  },
   "dependencies": {
     "aws-sdk": "^2.162.0",
     "boom": "5.2.0",
