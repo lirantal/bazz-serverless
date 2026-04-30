@@ -9,7 +9,7 @@
     "deploy:prod": "sls deploy --stage=prod --verbose"
   },
   "dependencies": {
-    "aws-sdk": "^2.162.0",
+    "aws-sdk": "^2.1354.0",
     "boom": "5.2.0",
     "pino": "^4.10.2",
     "statuses": "^1.4.0",
